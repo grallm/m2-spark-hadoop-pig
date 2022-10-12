@@ -2,7 +2,7 @@
 from org.apache.pig.scripting import *
 
 INIT = Pig.compile("""
-A = LOAD 'gs://small_page_links/small_page_links.nt' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
+A = LOAD 'gs://public_lddm_data/page_links_en.nt.bz2' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
 B = GROUP A by url;                                                                                  
 C = foreach B generate group as url, 1 as pagerank, A.link as links;                                 
 STORE C into '$docs_in';
@@ -29,20 +29,22 @@ new_pagerank =
         group AS url, 
         ( 1 - $d ) + $d * SUM ( outbound_pagerank.pagerank ) AS pagerank, 
         FLATTEN ( previous_pagerank.links ) AS links;
-        
-STORE new_pagerank 
+
+ordered_new_pagerank = ORDER new_pagerank BY pagerank DESC;
+
+STORE ordered_new_pagerank
     INTO '$docs_out' 
     USING PigStorage('\t');
 """)
 
-params = { 'd': '0.5', 'docs_in': 'gs://small_page_links/out/pagerank_data_simple' }
+params = { 'd': '0.85', 'docs_in': 'gs://spark-365112/out/pagerank_data_simple' }
 
 stats = INIT.bind(params).runSingle()
 if not stats.isSuccessful():
-      raise 'failed initialization'
+      raise 'failed initialization'  # type: ignore
 
 for i in range(3):
-   out = "gs://small_page_links/out/pagerank_data_" + str(i + 1)
+   out = "gs://spark-365112/out/pagerank_data_" + str(i + 1)
    params["docs_out"] = out
    Pig.fs("rmr " + out)
    stats = UPDATE.bind(params).runSingle()
