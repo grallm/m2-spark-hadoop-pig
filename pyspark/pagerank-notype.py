@@ -22,6 +22,7 @@ Please refer to PageRank implementation provided by graphx
 Example Usage:
 bin/spark-submit examples/src/main/python/pagerank.py data/mllib/pagerank_data.txt 10
 """
+import datetime
 import re
 import sys
 from operator import add
@@ -56,6 +57,7 @@ if __name__ == "__main__":
           "Please refer to PageRank implementation provided by graphx",
           file=sys.stderr)
 
+    time_start = datetime.datetime.now()
     # Initialize the spark context.
     spark = SparkSession\
         .builder\
@@ -86,7 +88,8 @@ if __name__ == "__main__":
         ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
 
     # Collects all URL ranks and dump them to console.
-    for (link, rank) in ranks.toDF(("Link", "Rank")).sort("Rank", ascending=False).collect():
-        print("%s %s" % (link, rank))
+    # for (link, rank) in ranks.collect():
+    #     print("%s %s" % (link, rank))
+    print("DURATION : " + str((datetime.datetime.now() - time_start).total_seconds()))
 
     spark.stop()

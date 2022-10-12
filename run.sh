@@ -33,7 +33,8 @@ gsutil rm -rf gs://spark-365112/out
 ## (suppose that out directory is empty !!)
 gcloud dataproc jobs submit pig \
  --region europe-west1 \
- --cluster cluster-a35a -f gs://spark-365112/dataproc.py
+ --cluster cluster-a35a gs://spark-365112/dataproc.py  \
+ -- gs://public_lddm_data/small_page_links.nt 1
 
 ## access results
 gsutil cat gs://spark-365112/out/pagerank_data_10/part-r-00000

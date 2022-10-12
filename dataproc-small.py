@@ -2,7 +2,7 @@
 import datetime
 from org.apache.pig.scripting import *
 
-# A = LOAD 'gs://public_lddm_data/small_page_links.nt' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
+# A = LOAD 'gs://public_lddm_data/page_links_en.nt.bz2' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
 INIT = Pig.compile("""
 A = LOAD '$input' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
 B = GROUP A by url;                                                                                  
@@ -41,7 +41,7 @@ time_start = datetime.datetime.now()
 params = {
     'd': '0.85',
     'docs_in': "gs://spark-365112/out/" + str(time_start) + "pagerank_data_simple",
-    'input': 'gs://public_lddm_data/page_links_en.nt.bz2'
+    'input': 'gs://public_lddm_data/small_page_links.nt'
 }
 
 stats = INIT.bind(params).runSingle()
