@@ -49,8 +49,8 @@ def parseNeighbors(urls) :
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: pagerank <file> <iterations>", file=sys.stderr)
+    if len(sys.argv) != 4:
+        print("Usage: pagerank <file> <iterations> <output>", file=sys.stderr)
         sys.exit(-1)
 
     print("WARN: This is a naive implementation of PageRank and is given as an example!\n" +
@@ -62,6 +62,10 @@ if __name__ == "__main__":
     spark = SparkSession\
         .builder\
         .appName("PythonPageRank")\
+        .config("spark.ui.showConsoleProgress", "true")\
+        .config("spark.yarn.historyServer.allowTracking", "true")\
+        .config("spark.executor.heartbeatInterval", "86400")\
+        .config("spark.network.timeout", "86400")\
         .getOrCreate()
 
     # Loads in input file. It should be in format of:
@@ -87,9 +91,8 @@ if __name__ == "__main__":
         # Re-calculates URL ranks based on neighbor contributions.
         ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
 
-    # Collects all URL ranks and dump them to console.
-    # for (link, rank) in ranks.collect():
-    #     print("%s %s" % (link, rank))
+    ranks.saveAsTextFile(sys.argv[3])
+
     print("DURATION : " + str((datetime.datetime.now() - time_start).total_seconds()))
 
     spark.stop()
