@@ -4,9 +4,6 @@
 for FILE in $(ls); do
   if [ "$FILE" != 'find-max-pagerank.sh' ]; then
     NB_LINES=$(wc -l < $FILE)
-    ((NB_LINES++))
-    # Add break line
-    echo >> $FILE
 
     $(sort -rk 2n $FILE >> $FILE)
 
