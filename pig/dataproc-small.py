@@ -2,7 +2,6 @@
 import datetime
 from org.apache.pig.scripting import *
 
-# A = LOAD 'gs://public_lddm_data/page_links_en.nt.bz2' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
 INIT = Pig.compile("""
 A = LOAD '$input' using PigStorage(' ') as (url:chararray, p:chararray, link:chararray);
 B = GROUP A by url;                                                                                  
@@ -40,7 +39,7 @@ STORE new_pagerank
 time_start = datetime.datetime.now()
 params = {
     'd': '0.85',
-    'docs_in': "gs://spark-365112/out/" + str(time_start) + "pagerank_data_simple",
+    'docs_in': "gs://spark-365112/out/pagerank_data_simple",
     'input': 'gs://public_lddm_data/small_page_links.nt'
 }
 
@@ -49,7 +48,7 @@ if not stats.isSuccessful():
       raise 'failed initialization'  # type: ignore
 
 for i in range(3):
-   out = "gs://spark-365112/out/" + str(time_start) + "/pagerank_data_" + str(i + 1)
+   out = "gs://spark-365112/out/pagerank_data_" + str(i + 1)
    params["docs_out"] = out
    Pig.fs("rmr " + out)
    stats = UPDATE.bind(params).runSingle()
