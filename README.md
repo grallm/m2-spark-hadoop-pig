@@ -1,5 +1,9 @@
 # PageRank on Google Cloud Platform using Pig and Spark
 
+Malo GRALL
+Alex MAINGUY
+Mathis ROCHER
+
 ## Method
 
 ### Small dataset
